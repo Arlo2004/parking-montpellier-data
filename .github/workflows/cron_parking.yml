@@ -1,0 +1,30 @@
+name: Recolector de Datos Montpellier
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Configurar Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Instalar librerías
+        run: pip install requests pandas
+
+      - name: Ejecutar recolección
+        run: python recolector.py
+
+      - name: Guardar cambios
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add parkings_montpellier.csv
+          git commit -m "Lectura automatica" || echo "Sin cambios"
+          git push
